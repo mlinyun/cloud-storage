@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mlinyun.cloudstorage.mapper.UserMapper">
+
+    <resultMap id="BaseResultMap" type="com.mlinyun.cloudstorage.model.User">
+        <id property="userId" column="userId" jdbcType="BIGINT"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="registerTime" column="registerTime" jdbcType="VARCHAR"/>
+        <result property="salt" column="salt" jdbcType="VARCHAR"/>
+        <result property="telephone" column="telephone" jdbcType="VARCHAR"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--
+        insert 标签和 select 标签分别对应 Mapper 接口中的插入和查询操作，
+        因此这里的标签 id 与 Mapper 接口的方法名是一致的
+    -->
+    <insert id="insertUser" parameterType="com.mlinyun.cloudstorage.model.User">
+        insert into `user` (username, password, telephone)
+            value (#{username}, #{password}, #{telephone})
+    </insert>
+
+    <select id="selectUser" resultType="com.mlinyun.cloudstorage.model.User">
+        select *
+        from user
+    </select>
+
+    <sql id="Base_Column_List">
+        userId,password,registerTime,
+        salt,telephone,username
+    </sql>
+</mapper>
