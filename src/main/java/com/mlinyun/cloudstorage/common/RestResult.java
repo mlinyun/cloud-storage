@@ -99,8 +99,8 @@ public class RestResult<T> {
     public static <T> RestResult<T> setResult(ResultCodeEnum resultCodeEnum) {
         RestResult<T> restResult = new RestResult<>();
         restResult.setSuccess(resultCodeEnum.getSuccess());
-        restResult.setCode(restResult.getCode());
-        restResult.setMessage(restResult.getMessage());
+        restResult.setCode(resultCodeEnum.getCode());
+        restResult.setMessage(resultCodeEnum.getMessage());
         return restResult;
     }
 }

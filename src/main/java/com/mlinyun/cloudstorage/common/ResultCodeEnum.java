@@ -17,17 +17,17 @@ public enum ResultCodeEnum {
     /**
      * 响应是否成功
      */
-    private Boolean success;
+    private final Boolean success;
 
     /**
      * 响应状态码
      */
-    private Integer code;
+    private final Integer code;
 
     /**
      * 响应信息
      */
-    private String message;
+    private final String message;
 
     ResultCodeEnum(Boolean success, Integer code, String message) {
         this.success = success;
