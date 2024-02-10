@@ -9,7 +9,7 @@ import lombok.Data;
 /**
  * 用户实体类
  */
-@Data //  lombok 提供的注解，会自动为该类添加 getter/setter 方法
+@Data //  lombok 提供的注解，会自动为该类添加 getter/setter、toString 方法
 @TableName("user")  // MyaBatis Plus 提供的注解，实体类添加，如果不添加，会按照默认规则进行表明的映射，比如 UserTable->user_table
 @Table(name = "user") // 自定义表名
 @Entity // 表明该类是一个实体类，添加了该注解后，才能被 jpa 扫描到
