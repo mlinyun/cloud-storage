@@ -11,6 +11,8 @@ import com.mlinyun.cloudstorage.service.UserService;
 import com.mlinyun.cloudstorage.util.JWTUtil;
 import com.mlinyun.cloudstorage.vo.LoginVO;
 import io.jsonwebtoken.Claims;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("/user")
+@Tag(name = "用户接口", description = "该接口为用户接口，主要做用户登录，注册和校验token")
 public class UserController {
 
     /**
@@ -40,6 +43,7 @@ public class UserController {
      */
     @ResponseBody
     @PostMapping(value = "/register")
+    @Operation(summary = "用户注册", description = "注册账号", tags = {"用户接口"})
     public RestResult<String> userRegister(@RequestBody RegisterDTO registerDTO) {
         // 非空判断
         if (registerDTO == null) {
@@ -64,6 +68,7 @@ public class UserController {
      */
     @ResponseBody
     @PostMapping(value = "/login")
+    @Operation(summary = "用户登录", description = "用户登录认证后才能进入系统", tags = {"用户接口"})
     public RestResult<LoginVO> userLogin(@RequestBody LoginDTO loginDTO) {
         // 非空判断
         if (loginDTO == null) {
@@ -100,6 +105,7 @@ public class UserController {
      */
     @ResponseBody
     @GetMapping(value = "/checkUserLoginInfo")
+    @Operation(summary = "检查用户登录信息", description = "验证token的有效性", tags = {"用户接口"})
     public RestResult<User> checkToken(@RequestHeader("token") String token) {
         RestResult<User> restResult = new RestResult<>();
         User tokenUserInfo = null;

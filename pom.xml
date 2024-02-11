@@ -86,10 +86,17 @@
             <artifactId>nashorn-core</artifactId>
             <version>15.4</version>
         </dependency>
+        <!-- JAXB API -->
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
             <version>2.3.1</version>
+        </dependency>
+        <!-- Knife4j -->
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+            <version>4.5.0</version>
         </dependency>
     </dependencies>
 
