@@ -28,10 +28,20 @@ public class RestResult<T> {
      */
     private T data;
 
+    public RestResult() {
+
+    }
+
+    public RestResult(Boolean success, Integer code, String message, T data) {
+        this.success = success;
+        this.code = code;
+        this.message = message;
+        this.data = data;
+    }
+
     /**
      * 通用返回成功
      *
-     * @param <T> 泛型
      * @return RestResult
      */
     public static <T> RestResult<T> success() {
@@ -45,7 +55,6 @@ public class RestResult<T> {
     /**
      * 通用返回失败，未知错误
      *
-     * @param <T> 泛型
      * @return RestResult
      */
     public static <T> RestResult<T> fail() {
@@ -62,7 +71,7 @@ public class RestResult<T> {
      * @param param 自定义返回数据
      * @return RestResult
      */
-    public RestResult<T> data(T param) {
+    public RestResult data(T param) {
         this.setData(param);
         return this;
     }
@@ -73,9 +82,9 @@ public class RestResult<T> {
      * @param message 自定义状态信息
      * @return RestResult
      */
-    public RestResult<T> message(String message) {
+    public RestResult<String> message(String message) {
         this.setMessage(message);
-        return this;
+        return (RestResult<String>) this;
     }
 
     /**
@@ -93,7 +102,6 @@ public class RestResult<T> {
      * 设置结果，形参未结果枚举类
      *
      * @param resultCodeEnum 结果枚举类
-     * @param <T>            泛型
      * @return RestResult
      */
     public static <T> RestResult<T> setResult(ResultCodeEnum resultCodeEnum) {

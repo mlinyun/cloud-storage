@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ControllerAdvice // 这是一个增强的 Controller。使用这个 Controller ，可以实现三个方面的功能：1、全局异常处理， 2、全局数据绑定， 3、全局数据预处理
 public class GlobalExceptionHandler {
 
+    /* -------------------- 运行时异常 -------------------- */
+
     /**
      * 通用异常处理方法
      *
@@ -51,5 +53,16 @@ public class GlobalExceptionHandler {
     public <T> RestResult<T> error(IndexOutOfBoundsException indexOutOfBoundsException) {
         log.error("全局异常捕获(下标越界异常): " + indexOutOfBoundsException.getMessage());
         return RestResult.setResult(ResultCodeEnum.INDEX_OUT_OF_BOUNDS);
+    }
+
+    /* -------------------- 业务异常 -------------------- */
+    @ResponseBody
+    @ExceptionHandler(BusinessException.class)
+    public <T> RestResult<T> error(BusinessException businessException) {
+        log.error("全局异常捕获(业务异常): " + businessException.getMessage());
+        boolean success = businessException.isSuccess();
+        int code = businessException.getCode();
+        String message = businessException.getMessage();
+        return new RestResult<>(success, code, message, null);
     }
 }

@@ -75,7 +75,21 @@
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
-            <version>0.12.5</version>
+            <version>0.9.1</version>
+        </dependency>
+        <!--
+            org.openjdk.nashorn 是Java 8中引入的一个JavaScript运行环境，用于在Java应用程序中执行JavaScript代码
+            然而，在Java 11及更高版本中，Nashorn引擎已被标记为计划移除。因此，如果你使用的是Java 11或更高版本，你需要手动的引入
+        -->
+        <dependency>
+            <groupId>org.openjdk.nashorn</groupId>
+            <artifactId>nashorn-core</artifactId>
+            <version>15.4</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
         </dependency>
     </dependencies>
 

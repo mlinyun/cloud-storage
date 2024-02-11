@@ -1,11 +1,24 @@
 package com.mlinyun.cloudstorage;
 
+import com.mlinyun.cloudstorage.config.jwt.JwtProperties;
 import com.mlinyun.cloudstorage.mapper.UserMapper;
 import com.mlinyun.cloudstorage.model.User;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.annotation.Resource;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import java.util.Date;
 import java.util.List;
 
 @SpringBootTest
@@ -20,7 +33,6 @@ class CloudStorageApplicationTests {
 
     /**
      * MyBatis UserMapper 接口测试
-     * 注意：该测试只能在未引入 MyBatis Plus 前测试才能通过
      */
     @Test
     public void testUserMapper1() {

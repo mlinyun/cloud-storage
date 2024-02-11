@@ -11,8 +11,9 @@ public enum ResultCodeEnum {
     SUCCESS(true, 20000, "请求成功"),
     UNKNOWN_ERROR(false, 20001, "未知错误"),
     PARAM_ERROR(false, 20002, "参数错误"),
-    NULL_POINT(false, 20003, "空指针异常"),
-    INDEX_OUT_OF_BOUNDS(false, 20004, "下标越界异常");
+    PARAM_NULL(false, 20003, "参数为空"),
+    NULL_POINT(false, 20004, "空指针异常"),
+    INDEX_OUT_OF_BOUNDS(false, 20005, "下标越界异常");
 
     /**
      * 响应是否成功

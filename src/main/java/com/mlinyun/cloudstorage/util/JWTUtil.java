@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.impl.DefaultClaims;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -33,8 +34,10 @@ public class JWTUtil {
      * @return 加密后的 key
      */
     private SecretKey generalKey() {
+        // 从配置文件中获取本地密钥
+        String secret = jwtProperties.getSecret();
         // 本地密钥解码
-        byte[] encodedKey = Base64.decodeBase64(jwtProperties.getSecret());
+        byte[] encodedKey = Base64.decodeBase64(secret);
         // 根据给定的字节数组使用AES加密算法构造一个密钥
         SecretKey key = new SecretKeySpec(encodedKey, 0, encodedKey.length, "AES");
         return key;
@@ -49,21 +52,22 @@ public class JWTUtil {
     public String createJWT(String subject) throws Exception {
 
         // token 类型
-        String TOKEN_TYP = jwtProperties.getHeader().getTyp();
+        final String TOKEN_TYP = jwtProperties.getHeader().getTyp();
         // 签名算法
-        String ALGORITHM = jwtProperties.getHeader().getAlg();
-
+        final String ALGORITHM = jwtProperties.getHeader().getAlg();
         // 签发者
-        String JWT_ISS = jwtProperties.getPayload().getRegisterClaims().getIss();
+        final String JWT_ISS = jwtProperties.getPayload().getRegisterClaims().getIss();
         // 接收者
-        String JWT_AUD = jwtProperties.getPayload().getRegisterClaims().getAud();
+        final String JWT_AUD = jwtProperties.getPayload().getRegisterClaims().getAud();
+        // 失效时间
+        final String obsoleteTime = jwtProperties.getPayload().getRegisterClaims().getExp();
 
         // 设置过期时间
         ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
-        ScriptEngine scriptEngine = scriptEngineManager.getEngineByName("js");
+        ScriptEngine scriptEngine = scriptEngineManager.getEngineByName("javascript");
         int expireTime = 0;
         try {
-            expireTime = (int) scriptEngine.eval(jwtProperties.getPayload().getRegisterClaims().getExp());
+            expireTime = (int) scriptEngine.eval(obsoleteTime);
         } catch (ScriptException scriptException) {
             log.error(scriptException.getMessage());
         }
@@ -71,32 +75,22 @@ public class JWTUtil {
         // 生成 JWT 的时间
         long nowTime = System.currentTimeMillis();
         Date nowDate = new Date(nowTime);
-
         // 生成签名的时候使用的密钥 secret，切记这个秘钥不能外露，是你服务端的私钥，
         // 在任何场景都不应该流露出去，一旦客户端得知这个 secret，那就意味着客户端是可以自我签发 jwt 的
         SecretKey key = generalKey();
 
-
         // 为 payload 添加各种标准声明和私有声明
-        Claims claims = (Claims) Jwts.builder().claims()
-                // 签发者
-                .issuer(JWT_ISS)
-                // 过期日期
-                .expiration(new Date(System.currentTimeMillis() + expireTime))
-                // 主题
-                .subject(subject)
-                // 接收者
-                .audience().add(JWT_AUD);
-        JwtBuilder builder = Jwts.builder()
-                // 设置头部信息 header
-                .header().add("typ", TOKEN_TYP).add("alg", ALGORITHM).and()
-                // 设置自定义负载信息 payload
-                .claims(claims)
-                // iat(issueAt): jwt 签发时间
-                .issuedAt(nowDate)
-                // 签名
-                .signWith(SignatureAlgorithm.valueOf(ALGORITHM), key);
-        return builder.compact();
+        DefaultClaims defaultClaims = new DefaultClaims();
+        defaultClaims.setIssuer(JWT_ISS);
+        defaultClaims.setExpiration(new Date(System.currentTimeMillis() + expireTime));
+        defaultClaims.setSubject(subject);
+        defaultClaims.setAudience(JWT_AUD);
+
+        JwtBuilder jwtBuilder = Jwts.builder()  // 表示 new 一个 JwtBuilder，设置 jwt 的 body
+                .setClaims(defaultClaims)
+                .setIssuedAt(nowDate)   // iat(issuedAt)：jwt的签发时间
+                .signWith(SignatureAlgorithm.forName(ALGORITHM), key);  // 设置签名，使用的是签名算法和签名使用的密钥
+        return jwtBuilder.compact();
     }
 
     /**
@@ -108,7 +102,9 @@ public class JWTUtil {
      */
     public Claims parseJWT(String jwt) throws Exception {
         SecretKey key = generalKey();   // 签名密钥，和生成的签名的密钥一模一样
-        Claims claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(jwt).getBody();
+        Claims claims = Jwts.parser()   // 得到DefaultJwtParser
+                .setSigningKey(key)     // 设置签名的秘钥
+                .parseClaimsJws(jwt).getBody(); // 设置需要解析的jwt
         return claims;
     }
 }
