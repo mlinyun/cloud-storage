@@ -21,8 +21,7 @@ public class GlobalExceptionHandler {
     @ResponseBody   // 该注解为 Spring Boot 响应体注解，用在这里的目的就是当出现异常时，直接将错误返回给前台，可以避免前台页面阻塞
     @ExceptionHandler(Exception.class)  // 用于指明异常处理类型
     public <T> RestResult<T> error(Exception exception) {
-        exception.printStackTrace();
-        log.error("全局异常捕获(通用异常): " + exception);
+        log.error("全局异常捕获(通用异常): " + exception.getMessage());
         return RestResult.fail();
     }
 
@@ -36,8 +35,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ExceptionHandler(NullPointerException.class)
     public <T> RestResult<T> error(NullPointerException nullPointerException) {
-        nullPointerException.printStackTrace();
-        log.error("全局异常捕获(空指针异常): " + nullPointerException);
+        log.error("全局异常捕获(空指针异常): " + nullPointerException.getMessage());
         return RestResult.setResult(ResultCodeEnum.NULL_POINT);
     }
 
@@ -51,8 +49,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ExceptionHandler(IndexOutOfBoundsException.class)
     public <T> RestResult<T> error(IndexOutOfBoundsException indexOutOfBoundsException) {
-        indexOutOfBoundsException.printStackTrace();
-        log.error("全局异常捕获(下标越界异常): " + indexOutOfBoundsException);
+        log.error("全局异常捕获(下标越界异常): " + indexOutOfBoundsException.getMessage());
         return RestResult.setResult(ResultCodeEnum.INDEX_OUT_OF_BOUNDS);
     }
 }
