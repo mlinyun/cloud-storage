@@ -2,6 +2,7 @@ package com.mlinyun.cloudstorage.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mlinyun.cloudstorage.common.RestResult;
 import com.mlinyun.cloudstorage.common.ResultCodeEnum;
 import com.mlinyun.cloudstorage.exception.BusinessException;
@@ -9,6 +10,8 @@ import com.mlinyun.cloudstorage.mapper.UserMapper;
 import com.mlinyun.cloudstorage.model.User;
 import com.mlinyun.cloudstorage.service.UserService;
 import com.mlinyun.cloudstorage.util.DateUtil;
+import com.mlinyun.cloudstorage.util.JWTUtil;
+import io.jsonwebtoken.Claims;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,6 +31,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Resource
     UserMapper userMapper;
+
+    @Resource
+    JWTUtil jwtUtil;
 
     /**
      * 用户注册服务实现
@@ -67,6 +73,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
     }
 
+    /**
+     * 用户登录服务实现
+     *
+     * @param user 要登录的用户
+     * @return 登录后的用户信息
+     */
     @Override
     public RestResult<User> login(User user) {
         // 获取登录时的手机号和密码
@@ -94,6 +106,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         } else {
             throw new BusinessException(ResultCodeEnum.PARAM_ERROR, "手机号或密码错误！");
         }
+    }
+
+    /**
+     * 通过 token 获取用户信息服务实现
+     *
+     * @param token token 值
+     * @return 脱敏后的用户信息
+     */
+    @Override
+    public User getUserByToken(String token) {
+        User tokenUserInfo = null;
+        try {
+            Claims claims = jwtUtil.parseJWT(token);
+            String subject = claims.getSubject();
+            ObjectMapper objectMapper = new ObjectMapper();
+            tokenUserInfo = objectMapper.readValue(subject, User.class);
+        } catch (Exception e) {
+            log.error("解码异常");
+            return null;
+        }
+        return tokenUserInfo;
     }
 
     /**

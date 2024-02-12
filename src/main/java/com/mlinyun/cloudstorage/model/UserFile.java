@@ -2,6 +2,7 @@ package com.mlinyun.cloudstorage.model;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -42,5 +43,9 @@ public class UserFile {
 
     @Column(columnDefinition = "varchar(25) comment '上传时间'")
     private String uploadTime;
+
+    @TableLogic
+    @Column(columnDefinition = "int(1) default 0 comment '是否删除 0-否, 1-是'")
+    private Integer deleteFlag;
 
 }

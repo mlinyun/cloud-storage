@@ -15,6 +15,95 @@
         <result property="userId" column="userId" jdbcType="BIGINT"/>
     </resultMap>
 
+    <select id="userFileList" resultType="com.mlinyun.cloudstorage.vo.UserFileListVO">
+        select * from user_file a
+        left join file on file.fileId = a.fileId
+        <where>
+            <if test="userFile.userId != null">
+                and a.userId = #{userFile.userId}
+            </if>
+            <if test="userFile.filePath != null">
+                and a.filePath = #{userFile.filePath}
+            </if>
+            <if test="userFile.extendName != null">
+                and a.extendName = #{userFile.extendName}
+            </if>
+        </where>
+        ORDER BY isDir desc
+        limit #{beginCount}, #{pageCount}
+    </select>
+
+    <!--
+        <sql> 标签的作用主要是用来定义可复用的 SQL 片段。通过 <sql> 标签，你可以将一些常用的 SQL 语句或者查询的部分抽取出来
+        然后在需要的地方通过 <include> 标签引用这个 SQL 片段，这样可以使你的代码更加清晰和易于维护
+    -->
+    <sql id="selectByExtendName">
+        left join file on file.fileId = user_file.fileId
+        where extendName in
+        <foreach collection="fileNameList" open="(" close=")" separator="," item="fileName">
+            #{fileName}
+        </foreach>
+        and userId = #{userId}
+        and deleteFlag = 0
+    </sql>
+
+    <sql id="selectByNotExtendName">
+        left join file on file.fileId = user_file.fileId
+        where extendName not in
+        <foreach collection="fileNameList" open="(" close=")" separator="," item="fileName">
+            #{fileName}
+        </foreach>
+        and userId = #{userId}
+        and deleteFlag = 0
+    </sql>
+
+    <select id="selectFileByExtendName" parameterType="com.mlinyun.cloudstorage.model.UserFile"
+            resultType="com.mlinyun.cloudstorage.vo.UserFileListVO">
+        select * from user_file
+        <include refid="selectByExtendName"/>
+        limit #{beginCount}, #{pageCount}
+    </select>
+
+    <select id="selectCountByExtendName" parameterType="com.mlinyun.cloudstorage.model.UserFile" resultType="java.lang.Long">
+        select count(*) from user_file
+        <include refid="selectByExtendName"/>
+    </select>
+
+    <select id="selectFileNotInExtendNames" parameterType="com.mlinyun.cloudstorage.model.UserFile"
+            resultType="com.mlinyun.cloudstorage.vo.UserFileListVO">
+        select * from user_file
+        <include refid="selectByNotExtendName"/>
+        limit #{beginCount}, #{pageCount}
+    </select>
+
+    <select id="selectCountNotInExtendNames" parameterType="com.mlinyun.cloudstorage.model.UserFile"
+            resultType="java.lang.Long">
+        select count(*) from user_file
+        <include refid="selectByNotExtendName"/>
+    </select>
+
+    <update id="updateFilepathByFilepath">
+        UPDATE user_file
+        SET filePath=REPLACE(filePath, #{param1}, #{param2})
+        WHERE filePath like N'${param1}%'
+          and userId = #{param3}
+    </update>
+
+    <update id="replaceFilePath">
+        UPDATE user_file
+        SET filepath=REPLACE(filepath, #{oldFilePath}, #{filePath})
+        WHERE filepath LIKE N'${oldFilePath}%'
+          and userId = #{userId};
+    </update>
+
+    <select id="selectStorageSizeByUserId" resultType="java.lang.Long" parameterType="java.lang.Long">
+        SELECT SUM(fileSize)
+        FROM user_file
+                 LEFT JOIN file ON file.fileId = user_file.fileId
+        WHERE user_file.userId = #{userId}
+          and deleteFlag = 0
+    </select>
+
     <sql id="Base_Column_List">
         userFileId,extendName,fileId,
         fileName,filePath,isDir,

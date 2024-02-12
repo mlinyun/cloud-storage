@@ -17,6 +17,9 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * 用户接口
+ */
 @Slf4j
 @RestController
 @RequestMapping("/user")

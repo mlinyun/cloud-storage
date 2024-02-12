@@ -25,4 +25,12 @@ public interface UserService extends IService<User> {
      */
     RestResult<User> login(User user);
 
+    /**
+     * 通过 token 获取用户信息服务
+     *
+     * @param token token 值
+     * @return 脱敏后的用户信息
+     */
+    User getUserByToken(String token);
+
 }

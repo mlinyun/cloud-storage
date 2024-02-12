@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
- * 前台登录接口请求参数
+ * 前台登录接口请求参数：用来存放用户注册接口请求参数
  */
 @Data
 @Schema(description = "登录DTO")

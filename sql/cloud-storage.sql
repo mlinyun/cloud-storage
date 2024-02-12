@@ -1,6 +1,6 @@
 DROP
-DATABASE IF EXISTS `user_center`;
+DATABASE IF EXISTS `cloud_storage`;
 CREATE
-DATABASE IF NOT EXISTS `user_center` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+DATABASE IF NOT EXISTS `cloud_storage` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE
-`user_center`;
+`cloud_storage`;
