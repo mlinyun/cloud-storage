@@ -20,13 +20,13 @@ public class UserFile {
     @Id
     @TableId(type = IdType.AUTO)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "bigint(20) comment '用户文件id'")
+    @Column(columnDefinition = "bigint(20) comment '用户文件ID'")
     private Long userFileId;
 
-    @Column(columnDefinition = "bigint(20) comment '用户id'")
+    @Column(columnDefinition = "bigint(20) comment '用户ID'")
     private Long userId;
 
-    @Column(columnDefinition = "bigint(20) comment '文件id'")
+    @Column(columnDefinition = "bigint(20) comment '文件ID'")
     private Long fileId;
 
     @Column(columnDefinition = "varchar(100) comment '文件名'")

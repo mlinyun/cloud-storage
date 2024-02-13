@@ -3,6 +3,9 @@ package com.mlinyun.cloudstorage.exception;
 import com.mlinyun.cloudstorage.common.ResultCodeEnum;
 import lombok.Getter;
 
+/**
+ * 业务异常
+ */
 @Getter
 public class BusinessException extends RuntimeException {
 

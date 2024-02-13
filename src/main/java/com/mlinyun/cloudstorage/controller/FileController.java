@@ -23,6 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 文件接口
+ */
 @Slf4j
 @RestController
 @RequestMapping("/file")
@@ -53,10 +56,10 @@ public class FileController {
         if (createFileDTO == null || token == null) {
             throw new BusinessException(ResultCodeEnum.PARAM_NULL);
         }
-        // 通过 token 获取用户信息
+        // 通过 token 获取用户信息，验证用户是否登录
         User sessionUser = userService.getUserByToken(token);
         if (sessionUser == null) {
-            throw new BusinessException(ResultCodeEnum.TOKEN_AUTH_FAILED);
+            throw new BusinessException(ResultCodeEnum.TOKEN_AUTH_FAILED, "用户未登录");
         }
         // 判断文件夹是否存在
         LambdaQueryWrapper<UserFile> lambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -99,10 +102,10 @@ public class FileController {
         if (userFileListDTO == null || token == null) {
             throw new BusinessException(ResultCodeEnum.PARAM_NULL);
         }
-        // 通过 token 获取用户信息
+        // 通过 token 获取用户信息，验证用户是否登录
         User sessionUser = userService.getUserByToken(token);
         if (sessionUser == null) {
-            throw new BusinessException(ResultCodeEnum.TOKEN_AUTH_FAILED);
+            throw new BusinessException(ResultCodeEnum.TOKEN_AUTH_FAILED, "用户未登录");
         }
         // 获取前台传来的参数值
         String filePath = userFileListDTO.getFilePath();    // 文件路径
@@ -131,10 +134,10 @@ public class FileController {
         if (token == null) {
             throw new BusinessException(ResultCodeEnum.PARAM_NULL);
         }
-        // 获取用户登录信息
+        // 通过 token 获取用户信息，验证用户是否登录
         User sessionUser = userService.getUserByToken(token);
         if (sessionUser == null) {
-            throw new BusinessException(ResultCodeEnum.TOKEN_AUTH_FAILED);
+            throw new BusinessException(ResultCodeEnum.TOKEN_AUTH_FAILED, "用户未登录");
         }
         // 获取用户ID
         long userId = sessionUser.getUserId();

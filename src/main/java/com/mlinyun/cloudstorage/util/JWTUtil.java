@@ -18,6 +18,9 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.util.Date;
 
+/**
+ * JWT 工具类
+ */
 @Slf4j
 @Component
 public class JWTUtil {

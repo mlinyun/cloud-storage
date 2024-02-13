@@ -50,14 +50,12 @@ public interface UserFileMapper extends BaseMapper<UserFile> {
      * @param beginCount   当前页码
      * @param pageCount    一页显示数量
      * @param userId       用户ID
-     * @return 包含该扩展名的文件列表
+     * @return 不包含该扩展名的文件列表
      */
     List<UserFileListVO> selectFileNotInExtendNames(List<String> fileNameList, Long beginCount, Long pageCount, long userId);
 
-    // TODO 文档注释待修改
-
     /**
-     * 统计该扩展名的文件数量
+     * 不通过文件扩展名获取文件数量
      *
      * @param fileNameList 文件名列表
      * @param beginCount   当前页码
