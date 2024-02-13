@@ -109,4 +109,16 @@ public class PathUtil {
         return decodeUrl;
     }
 
+    /**
+     * 获取系统文件名分割符
+     *
+     * @return 文件名分割符
+     */
+    public static String getSystemSeparator() {
+        String separator = "";
+        boolean flag = System.getProperty("os.name").toUpperCase().contains("WINDOWS");
+        separator = flag ? "\\" : "/";
+        return separator;
+    }
+
 }

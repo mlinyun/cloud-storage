@@ -83,7 +83,7 @@
         <include refid="selectByNotExtendName"/>
     </select>
 
-    <update id="updateFilepathByFilepath">
+    <update id="updateFilePathByFilePath">
         UPDATE user_file
         SET filePath=REPLACE(filePath, #{param1}, #{param2})
         WHERE filePath like N'${param1}%'

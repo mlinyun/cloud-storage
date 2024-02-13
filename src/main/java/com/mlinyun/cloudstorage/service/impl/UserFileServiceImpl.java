@@ -12,9 +12,11 @@ import com.mlinyun.cloudstorage.model.RecoveryFile;
 import com.mlinyun.cloudstorage.model.UserFile;
 import com.mlinyun.cloudstorage.service.UserFileService;
 import com.mlinyun.cloudstorage.util.DateUtil;
+import com.mlinyun.cloudstorage.util.PathUtil;
 import com.mlinyun.cloudstorage.vo.UserFileListVO;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -120,8 +122,7 @@ public class UserFileServiceImpl extends ServiceImpl<UserFileMapper, UserFile> i
                     .set(UserFile::getDeleteTime, DateUtil.getCurrentTime()) // 设置删除时间
                     .set(UserFile::getUserFileId, userFileId); // 设置用户文件ID
             userFileMapper.update(null, userFileLambdaUpdateWrapper);
-            String separator = isWindows() ? "\\" : "/";
-            String filePath = userFile.getFilePath() + userFile.getFileName() + separator;
+            String filePath = userFile.getFilePath() + userFile.getFileName() + PathUtil.getSystemSeparator();
             updateFileDeleteStateByFilePath(filePath, userFile.getDeleteBatchNum(), sessionUserId);
         } else { // 如果是文件
             UserFile userFileTemp = userFileMapper.selectById(userFileId);
@@ -139,15 +140,6 @@ public class UserFileServiceImpl extends ServiceImpl<UserFileMapper, UserFile> i
         recoveryFile.setDeleteTime(DateUtil.getCurrentTime());
         recoveryFile.setDeleteBatchNum(uuid);
         return recoveryFileMapper.insert(recoveryFile);
-    }
-
-    /**
-     * 判断当前系统环境是否为 Windows
-     *
-     * @return true-是 false-不是
-     */
-    public static boolean isWindows() {
-        return System.getProperty("os.name").toUpperCase().contains("WINDOWS");
     }
 
     private void updateFileDeleteStateByFilePath(String filePath, String deleteBatchNum, Long userId) {
@@ -188,4 +180,60 @@ public class UserFileServiceImpl extends ServiceImpl<UserFileMapper, UserFile> i
         lambdaQueryWrapper.eq(UserFile::getUserId, userId).likeRight(UserFile::getFilePath, filePath);
         return userFileMapper.selectList(lambdaQueryWrapper);
     }
+
+    /**
+     * 通过用户ID查询文件目录树服务实现
+     *
+     * @param userId 用户ID
+     * @return 文件目录树
+     */
+    @Override
+    public List<UserFile> selectFilePathTreeByUserId(Long userId) {
+        LambdaQueryWrapper<UserFile> userFileLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userFileLambdaQueryWrapper.eq(UserFile::getUserId, userId).eq(UserFile::getIsDir, 1);
+        return userFileMapper.selectList(userFileLambdaQueryWrapper);
+    }
+
+    /**
+     * 移动文件服务实现
+     *
+     * @param oldFilePath 原文件路径
+     * @param newFilePath 新文件路径
+     * @param fileName    文件名
+     * @param extendName  文件扩展名
+     * @param userId      用户ID
+     */
+    @Override
+    public void updateFilePathByFilePath(String oldFilePath, String newFilePath, String fileName, String extendName, Long userId) {
+        if ("null".equals(extendName)) {
+            extendName = null;
+        }
+
+        LambdaUpdateWrapper<UserFile> userFileLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        userFileLambdaUpdateWrapper
+                .set(UserFile::getFilePath, newFilePath)
+                .eq(UserFile::getFilePath, oldFilePath)
+                .eq(UserFile::getFileName, fileName)
+                .eq(UserFile::getUserId, userId);
+        if (StringUtils.isNotEmpty(extendName)) {
+            userFileLambdaUpdateWrapper.eq(UserFile::getExtendName, extendName);
+        } else {
+            userFileLambdaUpdateWrapper.isNull(UserFile::getExtendName);
+        }
+        userFileMapper.update(null, userFileLambdaUpdateWrapper);
+        // 移动子目录
+        String separator = PathUtil.getSystemSeparator();
+        oldFilePath = oldFilePath + fileName + separator;
+        newFilePath = newFilePath + fileName + separator;
+
+        oldFilePath = oldFilePath.replace("\\", "\\\\\\\\");
+        oldFilePath = oldFilePath.replace("'", "\\'");
+        oldFilePath = oldFilePath.replace("%", "\\%");
+        oldFilePath = oldFilePath.replace("_", "\\_");
+
+        if (extendName == null) { // 为 null 说明是目录，则需要移动子目录
+            userFileMapper.updateFilePathByFilePath(oldFilePath, newFilePath, userId);
+        }
+    }
+
 }

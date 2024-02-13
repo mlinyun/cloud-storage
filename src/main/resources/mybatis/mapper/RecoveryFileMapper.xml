@@ -11,6 +11,10 @@
         <result property="userFileId" column="userFileId" jdbcType="BIGINT"/>
     </resultMap>
 
+    <select id="selectRecoveryFileList" resultType="com.mlinyun.cloudstorage.vo.RecoveryFileListVO">
+
+    </select>
+
     <sql id="Base_Column_List">
         recoveryFileId,deleteBatchNum,deleteTime,
         userFileId

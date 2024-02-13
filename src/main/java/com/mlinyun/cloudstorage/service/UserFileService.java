@@ -48,4 +48,23 @@ public interface UserFileService extends IService<UserFile> {
      */
     List<UserFile> selectFileTreeListLikeFilePath(String filePath, long userId);
 
+    /**
+     * 通过用户ID查询文件目录树服务
+     *
+     * @param userId 用户ID
+     * @return 文件目录树
+     */
+    List<UserFile> selectFilePathTreeByUserId(Long userId);
+
+    /**
+     * 移动文件服务
+     *
+     * @param oldFilePath 原文件路径
+     * @param newFilePath 新文件路径
+     * @param fileName    文件名
+     * @param extendName  文件扩展名
+     * @param userId      用户ID
+     */
+    void updateFilePathByFilePath(String oldFilePath, String newFilePath, String fileName, String extendName, Long userId);
+
 }

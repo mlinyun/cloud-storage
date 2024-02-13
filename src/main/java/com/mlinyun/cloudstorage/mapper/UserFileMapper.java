@@ -65,6 +65,15 @@ public interface UserFileMapper extends BaseMapper<UserFile> {
      */
     Long selectCountNotInExtendNames(List<String> fileNameList, Long beginCount, Long pageCount, long userId);
 
+    /**
+     * 文件移动服务
+     *
+     * @param oldFilePath 原文件路径
+     * @param newFilePath 新文件路径
+     * @param userId      用户ID
+     */
+    void updateFilePathByFilePath(String oldFilePath, String newFilePath, Long userId);
+
 }
 
 
