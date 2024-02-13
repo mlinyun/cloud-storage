@@ -33,4 +33,19 @@ public interface UserFileService extends IService<UserFile> {
      */
     Map<String, Object> getUserFileByType(int fileType, Long currentPage, Long pageCount, Long userId);
 
+    /**
+     * 删除用户文件服务
+     *
+     * @param userFileId    用户文件ID
+     * @param sessionUserId 用户ID
+     */
+    int deleteUserFile(Long userFileId, Long sessionUserId);
+
+    /**
+     * @param filePath 文件路径
+     * @param userId   用户ID
+     * @return 文件列表
+     */
+    List<UserFile> selectFileTreeListLikeFilePath(String filePath, long userId);
+
 }

@@ -47,7 +47,7 @@ public class FileTransferController {
     @ResponseBody
     @GetMapping(value = "/uploadFile")
     @Operation(summary = "极速上传", description = "校验文件MD5判断文件是否存在，如果存在直接上传成功并返回skipUpload=true，如果不存在返回skipUpload=false需要再次调用该接口的POST方法", tags = {"文件传输接口"})
-    public RestResult<UploadFileVO> uploadFileSpeed(@RequestHeader("token") String token, UploadFileDTO uploadFileDto) {
+    public RestResult<UploadFileVO> uploadFileSpeed(@RequestHeader("token") String token, @RequestBody UploadFileDTO uploadFileDto) {
         // 非空判断
         if (uploadFileDto == null || token == null) {
             throw new BusinessException(ResultCodeEnum.PARAM_NULL);
@@ -73,6 +73,7 @@ public class FileTransferController {
                 userfile.setExtendName(FileUtil.getFileExtendName(fileName));
                 userfile.setIsDir(0);
                 userfile.setUploadTime(DateUtil.getCurrentTime());
+                userfile.setDeleteFlag(0);
                 userFileService.save(userfile);
                 // fileService.increaseFilePointCount(file.getFileId());
                 uploadFileVO.setSkipUpload(true);
@@ -86,7 +87,7 @@ public class FileTransferController {
     @ResponseBody
     @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
     @Operation(summary = "上传文件", description = "真正的上传文件接口", tags = {"文件传输接口"})
-    public RestResult<UploadFileVO> uploadFile(@RequestHeader("token") String token, HttpServletRequest request, UploadFileDTO uploadFileDto) {
+    public RestResult<UploadFileVO> uploadFile(@RequestHeader("token") String token, HttpServletRequest request, @RequestBody UploadFileDTO uploadFileDto) {
         // 非空判断
         if (uploadFileDto == null || token == null) {
             throw new BusinessException(ResultCodeEnum.PARAM_NULL);
@@ -103,7 +104,7 @@ public class FileTransferController {
 
     @Operation(summary = "下载文件", description = "下载文件接口", tags = {"文件传输接口"})
     @RequestMapping(value = "/downloadFile", method = RequestMethod.GET)
-    public void downloadFile(HttpServletResponse response, DownloadFileDTO downloadFileDTO) {
+    public void downloadFile(HttpServletResponse response, @RequestBody DownloadFileDTO downloadFileDTO) {
         // 非空判断
         if (downloadFileDTO == null) {
             throw new BusinessException(ResultCodeEnum.PARAM_NULL);

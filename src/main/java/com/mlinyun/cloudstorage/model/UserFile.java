@@ -45,7 +45,13 @@ public class UserFile {
     private String uploadTime;
 
     @TableLogic
-    @Column(columnDefinition = "int(1) default 0 comment '是否删除 0-否, 1-是'")
+    @Column(columnDefinition = "int(11) comment '删除标志 0-未删除 1-已删除'")
     private Integer deleteFlag;
+
+    @Column(columnDefinition = "varchar(25) comment '删除时间'")
+    private String deleteTime;
+
+    @Column(columnDefinition = "varchar(50) comment '删除批次号'")
+    private String deleteBatchNum;
 
 }
