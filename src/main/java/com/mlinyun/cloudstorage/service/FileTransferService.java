@@ -27,4 +27,12 @@ public interface FileTransferService {
      */
     void downloadFile(HttpServletResponse httpServletResponse, DownloadFileDTO downloadFileDTO);
 
+    /**
+     * 获取存储信息服务接口
+     *
+     * @param userId 用户ID
+     * @return 用户存储信息
+     */
+    Long selectStorageSizeByUserId(Long userId);
+
 }

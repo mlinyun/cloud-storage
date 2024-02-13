@@ -67,4 +67,23 @@ public interface UserFileService extends IService<UserFile> {
      */
     void updateFilePathByFilePath(String oldFilePath, String newFilePath, String fileName, String extendName, Long userId);
 
+    /**
+     * 通过文件名和路径获取文件列表服务
+     *
+     * @param fileName 文件名
+     * @param filePath 文件路径
+     * @param userId   用户ID
+     * @return 文件列表
+     */
+    List<UserFile> selectUserFileByNameAndPath(String fileName, String filePath, Long userId);
+
+    /**
+     * 重命名文件服务
+     *
+     * @param filePath    文件路径
+     * @param oldFilePath 原文件路径
+     * @param userId      用户ID
+     */
+    void replaceUserFilePath(String filePath, String oldFilePath, Long userId);
+
 }

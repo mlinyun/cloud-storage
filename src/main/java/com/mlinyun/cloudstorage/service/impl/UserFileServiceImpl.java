@@ -236,4 +236,35 @@ public class UserFileServiceImpl extends ServiceImpl<UserFileMapper, UserFile> i
         }
     }
 
+    /**
+     * 通过文件名和路径获取文件列表服务实现
+     *
+     * @param fileName 文件名
+     * @param filePath 文件路径
+     * @param userId   用户ID
+     * @return 文件列表
+     */
+    @Override
+    public List<UserFile> selectUserFileByNameAndPath(String fileName, String filePath, Long userId) {
+        LambdaQueryWrapper<UserFile> userFileLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userFileLambdaQueryWrapper
+                .eq(UserFile::getFileName, fileName)
+                .eq(UserFile::getFilePath, filePath)
+                .eq(UserFile::getUserId, userId)
+                .eq(UserFile::getDeleteFlag, 0);
+        return userFileMapper.selectList(userFileLambdaQueryWrapper);
+    }
+
+    /**
+     * 重命名文件服务实现
+     *
+     * @param filePath    文件路径
+     * @param oldFilePath 原文件路径
+     * @param userId      用户ID
+     */
+    @Override
+    public void replaceUserFilePath(String filePath, String oldFilePath, Long userId) {
+        userFileMapper.replaceFilePath(filePath, oldFilePath, userId);
+    }
+
 }

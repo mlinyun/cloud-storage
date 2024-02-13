@@ -3,6 +3,7 @@ package com.mlinyun.cloudstorage.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.mlinyun.cloudstorage.model.UserFile;
 import com.mlinyun.cloudstorage.vo.UserFileListVO;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public interface UserFileMapper extends BaseMapper<UserFile> {
     List<UserFileListVO> userFileList(UserFile userFile, Long beginCount, Long pageCount);
 
     /**
-     * 通过文件扩展名获取文件列表
+     * 通过文件扩展名获取文件列表服务接口
      *
      * @param fileNameList 文件名列表
      * @param beginCount   当前页码
@@ -66,13 +67,30 @@ public interface UserFileMapper extends BaseMapper<UserFile> {
     Long selectCountNotInExtendNames(List<String> fileNameList, Long beginCount, Long pageCount, long userId);
 
     /**
-     * 文件移动服务
+     * 文件移动服务接口
      *
      * @param oldFilePath 原文件路径
      * @param newFilePath 新文件路径
      * @param userId      用户ID
      */
     void updateFilePathByFilePath(String oldFilePath, String newFilePath, Long userId);
+
+    /**
+     * 文件重命名服务接口
+     *
+     * @param filePath    文件路径
+     * @param oldFilePath 原文件路径
+     * @param userId      用户ID
+     */
+    void replaceFilePath(@Param("filePath") String filePath, @Param("oldFilePath") String oldFilePath, @Param("userId") Long userId);
+
+    /**
+     * 获取存储信息服务接口
+     *
+     * @param userId 用户ID
+     * @return 文件存储大小
+     */
+    Long selectStorageSizeByUserId(Long userId);
 
 }
 

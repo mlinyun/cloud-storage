@@ -2,10 +2,12 @@ package com.mlinyun.cloudstorage.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.mlinyun.cloudstorage.common.RestResult;
 import com.mlinyun.cloudstorage.common.ResultCodeEnum;
 import com.mlinyun.cloudstorage.dto.*;
 import com.mlinyun.cloudstorage.exception.BusinessException;
+import com.mlinyun.cloudstorage.model.File;
 import com.mlinyun.cloudstorage.model.User;
 import com.mlinyun.cloudstorage.model.UserFile;
 import com.mlinyun.cloudstorage.service.FileService;
@@ -367,5 +369,50 @@ public class FileController {
             );
         }
         return RestResult.success().message("批量移动文件成功！");
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/renameFile", method = RequestMethod.POST)
+    @Operation(summary = "文件重命名", description = "文件重命名", tags = {"文件接口"})
+    public RestResult<String> renameFile(@RequestHeader("token") String token, @RequestBody RenameFileDTO renameFileDTO) {
+        // 非空判断
+        if (renameFileDTO == null || token == null) {
+            throw new BusinessException(ResultCodeEnum.PARAM_NULL);
+        }
+        // 通过 token 获取用户信息，验证用户是否登录
+        User sessionUser = userService.getUserByToken(token);
+        if (sessionUser == null) {
+            throw new BusinessException(ResultCodeEnum.TOKEN_AUTH_FAILED, "用户未登录");
+        }
+        UserFile userFile = userFileService.getById(renameFileDTO.getUserFileId());
+        List<UserFile> userFiles = userFileService.selectUserFileByNameAndPath(
+                renameFileDTO.getFileName(),
+                userFile.getFilePath(),
+                sessionUser.getUserId()
+        );
+        if (userFiles != null && !userFiles.isEmpty()) {
+            return RestResult.fail().message("同名文件已存在");
+        }
+        if (userFile.getIsDir() == 1) {
+            LambdaUpdateWrapper<UserFile> userFileLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            userFileLambdaUpdateWrapper
+                    .set(UserFile::getFileName, renameFileDTO.getFileName())
+                    .eq(UserFile::getUserFileId, renameFileDTO.getUserFileId());
+            userFileService.update(userFileLambdaUpdateWrapper);
+            userFileService.replaceUserFilePath(
+                    userFile.getFilePath() + renameFileDTO.getFileName() + PathUtil.getSystemSeparator(),
+                    userFile.getFilePath() + userFile.getFileName() + PathUtil.getStaticPath(),
+                    sessionUser.getUserId()
+            );
+        } else {
+            File file = fileService.getById(userFile.getFileId());
+            LambdaUpdateWrapper<UserFile> userFileLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            userFileLambdaUpdateWrapper
+                    .set(UserFile::getFileName, renameFileDTO.getFileName())
+                    .set(UserFile::getUploadTime, DateUtil.getCurrentTime())
+                    .eq(UserFile::getUserFileId, renameFileDTO.getUserFileId());
+            userFileService.update(userFileLambdaUpdateWrapper);
+        }
+        return RestResult.success().message("文件重命名成功！");
     }
 }

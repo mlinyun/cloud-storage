@@ -115,4 +115,15 @@ public class FileTransferServiceImpl implements FileTransferService {
         downloader.download(httpServletResponse, uploadFile);
     }
 
+    /**
+     * 获取存储信息服务接口实现
+     *
+     * @param userId 用户ID
+     * @return 用户存储信息
+     */
+    @Override
+    public Long selectStorageSizeByUserId(Long userId) {
+        return userFileMapper.selectStorageSizeByUserId(userId);
+    }
+
 }
